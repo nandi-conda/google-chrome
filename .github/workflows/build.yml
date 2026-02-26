@@ -21,7 +21,12 @@ jobs:
       - uses: prefix-dev/rattler-build-action@v0.2.34
         with:
           recipe-path: recipe.yaml
-          upload-artifact: true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: conda-package
+          path: output/**/**/*.conda
 
   publish:
     needs: build
@@ -30,7 +35,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: package
+          name: conda-package
           path: output
 
       - name: Install rattler-build
@@ -54,7 +59,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: package
+          name: conda-package
           path: output
 
       - name: Install rattler-build

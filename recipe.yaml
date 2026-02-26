@@ -34,6 +34,7 @@ build:
     - |
       cat << 'EOF' > $PREFIX/Menu/google-chrome.json
       {
+        "$schema": "https://raw.githubusercontent.com/conda/menuinst/main/menuinst/schema.json",
         "menu_name": "Google Chrome",
         "menu_items": [
           {

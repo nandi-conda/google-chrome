@@ -44,7 +44,9 @@ build:
             "workdir": "{{ HOME }}",
             "shortcut": true,
             "activate": false,
-            "platforms": ["linux-64"]
+            "platforms": {
+              "linux": {}
+            }
           }
         ]
       }

@@ -17,10 +17,10 @@ build:
     # Create directories
     - mkdir -p $PREFIX/bin
     - mkdir -p $PREFIX/lib/google-chrome
-    - mkdir -p $PREFIX/share/applications
+    - mkdir -p $PREFIX/share/menu/google-chrome
     - mkdir -p $PREFIX/share/icons/hicolor
     - mkdir -p $PREFIX/share/licenses/google-chrome
-    - mkdir -p $PREFIX/share/menu
+    - mkdir -p $PREFIX/share/applications
 
     # Extract .deb contents to temp directory
     - mkdir -p /tmp/extract
@@ -32,21 +32,6 @@ build:
 
     # Install launcher wrapper script
     - install -m755 google-chrome-stable.sh $PREFIX/bin/google-chrome-stable
-
-    # Install desktop file that points to our conda Chrome (not system)
-    - mkdir -p $PREFIX/share/applications
-    - cat > $PREFIX/share/applications/google-chrome.desktop <<EOF
-[Desktop Entry]
-Version=1.0
-Type=Application
-Name=Google Chrome
-Exec=$CONDA_PREFIX/bin/google-chrome/google-chrome %U
-Icon=$CONDA_PREFIX/lib/google-chrome/product_logo_48.png
-Comment=Google Chrome (Conda)
-Categories=Network;WebBrowser;
-StartupNotify=true
-Terminal=false
-EOF
 
     # Install icons
     - |

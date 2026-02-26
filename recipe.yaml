@@ -8,6 +8,7 @@ source:
     file_name: google-chrome.deb
   - path: eula_text.html
   - path: google-chrome-stable.sh
+  - path: menu/
 
 build:
   number: 0
@@ -18,7 +19,7 @@ build:
     - mkdir -p $PREFIX/share/applications
     - mkdir -p $PREFIX/share/icons/hicolor
     - mkdir -p $PREFIX/share/licenses/google-chrome
-    - mkdir -p $PREFIX/share/doc/google-chrome
+    - mkdir -p $PREFIX/share/menu
 
     # Extract .deb contents to temp directory
     - mkdir -p /tmp/extract
@@ -31,8 +32,9 @@ build:
     # Install launcher wrapper script
     - install -m755 google-chrome-stable.sh $PREFIX/bin/google-chrome-stable
 
-    # Install desktop file
-    - install -Dm644 /tmp/extract/usr/share/applications/google-chrome.desktop $PREFIX/share/applications/
+    # Install menuinst menu file
+    - mkdir -p $PREFIX/share/menu
+    - cp -r menu/google-chrome $PREFIX/share/menu/
 
     # Install icons
     - |
@@ -56,12 +58,14 @@ build:
 
 requirements:
   build:
-  host:
-  run:
+    - menuinst >=2
+  run_constrained:
+    - menuinst >=2
 
 tests:
   - script:
       - test -f $PREFIX/lib/google-chrome/google-chrome
+      - test -f $PREFIX/share/menu/google-chrome/menu.json
 
 about:
   summary: The popular web browser by Google (Stable Channel)

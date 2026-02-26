@@ -16,64 +16,49 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install rattler-build
-        run: |
-          curl -fsSL https://github.com/prefix-dev/rattler-build/releases/latest/download/rattler-build-linux-x86_64.tar.gz | tar xz -C /tmp
-          sudo mv /tmp/rattler-build /usr/local/bin/
-
-      - name: Build conda package
-        run: rattler-build build --recipe recipe.yaml --output-dir ./output
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - uses: prefix-dev/rattler-build-action@v0.2.34
         with:
-          name: conda-package
-          path: output/**/**/*.conda
-          retention-days: 7
+          recipe-path: recipe.yaml
+          upload-artifact: true
 
   publish:
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          name: conda-package
+          name: package
           path: output
 
-      - name: Install rattler-build
-        run: |
-          curl -fsSL https://github.com/prefix-dev/rattler-build/releases/latest/download/rattler-build-linux-x86_64.tar.gz | tar xz -C /tmp
-          sudo mv /tmp/rattler-build /usr/local/bin/
+      - uses: prefix-dev/rattler-build-action@v0.2.34
+        with:
+          recipe-path: recipe.yaml
 
       - name: Upload to prefix.dev
         env:
           PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
         run: |
-          find output -name "*.conda" -exec rattler-build upload prefix --channel nandi-testing --skip-existing {} \;
+          rattler-build upload prefix --channel nandi-testing --skip-existing output/**/*.conda
 
   publish-pr:
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          name: conda-package
+          name: package
           path: output
 
-      - name: Install rattler-build
-        run: |
-          curl -fsSL https://github.com/prefix-dev/rattler-build/releases/latest/download/rattler-build-linux-x86_64.tar.gz | tar xz -C /tmp
-          sudo mv /tmp/rattler-build /usr/local/bin/
+      - uses: prefix-dev/rattler-build-action@v0.2.34
+        with:
+          recipe-path: recipe.yaml
 
       - name: Upload to prefix.dev (testing)
         env:
           PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
         run: |
-          find output -name "*.conda" -exec rattler-build upload prefix --channel nandi-testing --skip-existing {} \;
+          rattler-build upload prefix --channel nandi-testing --skip-existing output/**/*.conda

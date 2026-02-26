@@ -33,8 +33,8 @@ build:
     - install -m755 google-chrome-stable.sh $PREFIX/bin/google-chrome-stable
 
     # Install menuinst menu file
-    - mkdir -p $PREFIX/share/menu
-    - cp -r menu/google-chrome $PREFIX/share/menu/
+    - mkdir -p $PREFIX/share/menu/google-chrome
+    - cp $SRC_DIR/menu/google-chrome/menu.json $PREFIX/share/menu/google-chrome/
 
     # Install icons
     - |

@@ -51,7 +51,7 @@ jobs:
         env:
           PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
         run: |
-          find output -name "*.conda" -exec rattler-build upload prefix --channel nandi-testing {} \;
+          find output -name "*.conda" -exec rattler-build upload prefix --channel nandi-testing --skip-existing {} \;
 
   publish-pr:
     needs: build
@@ -75,4 +75,4 @@ jobs:
         env:
           PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
         run: |
-          find output -name "*.conda" -exec rattler-build upload prefix --channel nandi-testing {} \;
+          find output -name "*.conda" -exec rattler-build upload prefix --channel nandi-testing --skip-existing {} \;

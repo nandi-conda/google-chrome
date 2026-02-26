@@ -41,9 +41,6 @@ build:
             "description": "Access the Internet",
             "icon": "{{ PREFIX }}/lib/google-chrome/product_logo_48.png",
             "command": ["{{ PREFIX }}/bin/google-chrome-stable"],
-            "workdir": "{{ HOME }}",
-            "shortcut": true,
-            "activate": false,
             "platforms": {
               "linux": {}
             }

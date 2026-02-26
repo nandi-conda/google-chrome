@@ -3,7 +3,7 @@ name: Build and Publish
 on:
   push:
     branches: [main, master]
-    tags: ['v*']
+    tags: ["v*"]
   pull_request:
     branches: [main, master]
   workflow_dispatch:
@@ -15,7 +15,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30  # Add 30-minute timeout for build
+    timeout-minutes: 30 # Add 30-minute timeout for build
     steps:
       - uses: actions/checkout@v4
 
@@ -51,7 +51,7 @@ jobs:
         env:
           PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
         run: |
-          find output -name "*.conda" -exec rattler-build upload prefix --channel nandi-testing --skip-existing {} \;
+          find output -name "*.conda" -exec rattler-build upload prefix --channel nandi-testing {} \;
 
   publish-pr:
     needs: build
@@ -75,4 +75,4 @@ jobs:
         env:
           PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
         run: |
-          find output -name "*.conda" -exec rattler-build upload prefix --channel nandi-testing --skip-existing {} \;
+          find output -name "*.conda" -exec rattler-build upload prefix --channel nandi-testing {} \;

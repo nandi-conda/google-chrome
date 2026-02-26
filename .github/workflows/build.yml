@@ -5,7 +5,7 @@ on:
     branches: [main, master]
     tags: ['v*']
   pull_request:
-    branches: [main]
+    branches: [main, master]
   workflow_dispatch:
 
 permissions:
@@ -19,13 +19,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup pixi
-        uses: prefix-dev/setup-pixi@v0.8.1
-        with:
-          pixi-version: latest
-
       - name: Install rattler-build
-        run: pixi global install rattler-build
+        run: |
+          curl -fsSL https://github.com/prefix-dev/rattler-build/releases/latest/download/rattler-build-linux-x86_64.tar.gz | tar xz -C /tmp
+          sudo mv /tmp/rattler-build /usr/local/bin/
 
       - name: Build conda package
         run: rattler-build build --recipe recipe.yaml --output-dir ./output
@@ -48,13 +45,10 @@ jobs:
           name: conda-package
           path: output
 
-      - name: Setup pixi
-        uses: prefix-dev/setup-pixi@v0.8.1
-        with:
-          pixi-version: latest
-
       - name: Install rattler-build
-        run: pixi global install rattler-build
+        run: |
+          curl -fsSL https://github.com/prefix-dev/rattler-build/releases/latest/download/rattler-build-linux-x86_64.tar.gz | tar xz -C /tmp
+          sudo mv /tmp/rattler-build /usr/local/bin/
 
       - name: Upload to prefix.dev
         env:
@@ -73,13 +67,10 @@ jobs:
           name: conda-package
           path: output
 
-      - name: Setup pixi
-        uses: prefix-dev/setup-pixi@v0.8.1
-        with:
-          pixi-version: latest
-
       - name: Install rattler-build
-        run: pixi global install rattler-build
+        run: |
+          curl -fsSL https://github.com/prefix-dev/rattler-build/releases/latest/download/rattler-build-linux-x86_64.tar.gz | tar xz -C /tmp
+          sudo mv /tmp/rattler-build /usr/local/bin/
 
       - name: Upload to prefix.dev (testing)
         env:

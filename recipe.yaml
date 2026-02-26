@@ -8,7 +8,8 @@ source:
     file_name: google-chrome.deb
   - path: eula_text.html
   - path: google-chrome-stable.sh
-  - path: menu/
+  - path: menu/google-chrome/menu.json
+    target_directory: menu/google-chrome
 
 build:
   number: 0
@@ -34,7 +35,7 @@ build:
 
     # Install menuinst menu file
     - mkdir -p $PREFIX/share/menu/google-chrome
-    - cp $SRC_DIR/menu/google-chrome/menu.json $PREFIX/share/menu/google-chrome/
+    - cp menu/google-chrome/menu.json $PREFIX/share/menu/google-chrome/
 
     # Install icons
     - |

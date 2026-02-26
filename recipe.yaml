@@ -12,30 +12,50 @@ source:
 build:
   number: 0
   script:
+    # Create directories
     - mkdir -p $PREFIX/bin
     - mkdir -p $PREFIX/lib/google-chrome
     - mkdir -p $PREFIX/share/applications
     - mkdir -p $PREFIX/share/icons/hicolor
     - mkdir -p $PREFIX/share/licenses/google-chrome
-    # Extract .deb contents
+    - mkdir -p $PREFIX/share/doc/google-chrome
+
+    # Extract .deb contents to temp directory
+    - mkdir -p /tmp/extract
     - ar x google-chrome.deb
-    - tar -xf data.tar.xz -C $PREFIX --strip-components=0
-    # Install launcher script
+    - tar -xf data.tar.xz -C /tmp/extract
+
+    # Copy Chrome binaries to lib directory (avoid /opt symlinks)
+    - cp -r /tmp/extract/opt/google/chrome/* $PREFIX/lib/google-chrome/
+
+    # Install launcher wrapper script
     - install -m755 google-chrome-stable.sh $PREFIX/bin/google-chrome-stable
+
+    # Install desktop file
+    - install -Dm644 /tmp/extract/usr/share/applications/google-chrome.desktop $PREFIX/share/applications/
+
     # Install icons
-    - for i in 16x16 24x24 32x32 48x48 64x64 128x128 256x256; do
-        install -Dm644 $PREFIX/opt/google/chrome/product_logo_${i/x*/}.png $PREFIX/share/icons/hicolor/$i/apps/google-chrome.png || true;
+    - |
+      for i in 16 24 32 48 64 128 256; do
+        if [ -f "$PREFIX/lib/google-chrome/product_logo_${i}.png" ]; then
+          dir="$PREFIX/share/icons/hicolor/${i}x${i}/apps"
+          mkdir -p "$dir"
+          install -m644 "$PREFIX/lib/google-chrome/product_logo_${i}.png" "$dir/google-chrome.png"
+        fi
       done
+
     # Install license
-    - install -Dm644 eula_text.html $PREFIX/share/licenses/google-chrome/eula_text.html
-    - install -Dm644 $PREFIX/opt/google/chrome/WidevineCdm/LICENSE $PREFIX/share/licenses/google-chrome/WidevineCdm-LICENSE.txt || true
-    # Fix desktop entry
-    - sed -i -e "/Exec=/i\\StartupWMClass=Google-chrome" -e "s/x-scheme-handler\\/ftp;\\?//g" $PREFIX/share/applications/google-chrome.desktop || true
+    - install -m644 eula_text.html $PREFIX/share/licenses/google-chrome/
+    - |
+      if [ -f "$PREFIX/lib/google-chrome/WidevineCdm/LICENSE" ]; then
+        install -m644 "$PREFIX/lib/google-chrome/WidevineCdm/LICENSE" $PREFIX/share/licenses/google-chrome/WidevineCdm-LICENSE.txt
+      fi
+
+    # Clean up unnecessary files from the deb extraction
+    - rm -rf /tmp/extract
 
 requirements:
   build:
-    - python
-    - conda-package-handling
   host:
   run:
     - alsa-lib
@@ -47,7 +67,7 @@ requirements:
 
 tests:
   - script:
-      - google-chrome-stable --version || true
+      - test -f $PREFIX/lib/google-chrome/google-chrome
 
 about:
   summary: The popular web browser by Google (Stable Channel)

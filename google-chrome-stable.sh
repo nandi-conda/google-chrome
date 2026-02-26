@@ -7,5 +7,5 @@ if [[ -f $XDG_CONFIG_HOME/chrome-flags.conf ]]; then
     CHROME_USER_FLAGS="$(grep -v '^#' $XDG_CONFIG_HOME/chrome-flags.conf)"
 fi
 
-# Launch
-exec /opt/google/chrome/google-chrome $CHROME_USER_FLAGS "$@"
+# Launch - use conda prefix location
+exec "$CONDA_PREFIX/lib/google-chrome/google-chrome" $CHROME_USER_FLAGS "$@"

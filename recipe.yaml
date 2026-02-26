@@ -58,12 +58,6 @@ requirements:
   build:
   host:
   run:
-    - alsa-lib
-    - gtk3
-    - libcups
-    - libxss
-    - libxtst
-    - nss
 
 tests:
   - script:

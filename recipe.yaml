@@ -8,8 +8,6 @@ source:
     file_name: google-chrome.deb
   - path: eula_text.html
   - path: google-chrome-stable.sh
-  - path: menu/google-chrome/menu.json
-    target_directory: menu/google-chrome
 
 build:
   number: 0
@@ -17,10 +15,9 @@ build:
     # Create directories
     - mkdir -p $PREFIX/bin
     - mkdir -p $PREFIX/lib/google-chrome
-    - mkdir -p $PREFIX/share/menu/google-chrome
     - mkdir -p $PREFIX/share/icons/hicolor
     - mkdir -p $PREFIX/share/licenses/google-chrome
-    - mkdir -p $PREFIX/share/applications
+    - mkdir -p $PREFIX/Menu
 
     # Extract .deb contents to temp directory
     - mkdir -p /tmp/extract
@@ -32,6 +29,25 @@ build:
 
     # Install launcher wrapper script
     - install -m755 google-chrome-stable.sh $PREFIX/bin/google-chrome-stable
+
+    # Install menuinst menu file
+    - |
+      cat << 'EOF' > $PREFIX/Menu/google-chrome.json
+      {
+        "menu_name": "Google Chrome",
+        "menu_items": [
+          {
+            "name": "Google Chrome",
+            "description": "Access the Internet",
+            "icon": "{{ PREFIX }}/lib/google-chrome/product_logo_48.png",
+            "command": ["{{ PREFIX }}/bin/google-chrome-stable"],
+            "workdir": "{{ HOME }}",
+            "shortcut": true,
+            "activate": false
+          }
+        ]
+      }
+      EOF
 
     # Install icons
     - |
@@ -62,7 +78,7 @@ requirements:
 tests:
   - script:
       - test -f $PREFIX/lib/google-chrome/google-chrome
-      - test -f $PREFIX/share/menu/google-chrome/menu.json
+      - test -f $PREFIX/Menu/google-chrome.json
 
 about:
   summary: The popular web browser by Google (Stable Channel)

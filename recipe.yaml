@@ -43,7 +43,8 @@ build:
             "command": ["{{ PREFIX }}/bin/google-chrome-stable"],
             "workdir": "{{ HOME }}",
             "shortcut": true,
-            "activate": false
+            "activate": false,
+            "platforms": ["linux-64"]
           }
         ]
       }

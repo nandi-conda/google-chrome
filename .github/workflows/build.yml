@@ -33,15 +33,19 @@ jobs:
           name: package
           path: output
 
-      - uses: prefix-dev/rattler-build-action@v0.2.34
-        with:
-          recipe-path: recipe.yaml
+      - name: Install rattler-build
+        run: |
+          arch=$(uname -m)
+          if [ "$arch" = "arm64" ]; then arch="aarch64"; fi
+          curl -fsSL "https://github.com/prefix-dev/rattler-build/releases/latest/download/rattler-build-${arch}-unknown-linux-musl" \
+            -o /usr/local/bin/rattler-build
+          chmod +x /usr/local/bin/rattler-build
 
       - name: Upload to prefix.dev
         env:
           PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
         run: |
-          rattler-build upload prefix --channel nandi-testing --skip-existing output/**/*.conda
+          find output -name "*.conda" -exec rattler-build upload prefix --channel nandi-testing --skip-existing {} \;
 
   publish-pr:
     needs: build
@@ -53,12 +57,16 @@ jobs:
           name: package
           path: output
 
-      - uses: prefix-dev/rattler-build-action@v0.2.34
-        with:
-          recipe-path: recipe.yaml
+      - name: Install rattler-build
+        run: |
+          arch=$(uname -m)
+          if [ "$arch" = "arm64" ]; then arch="aarch64"; fi
+          curl -fsSL "https://github.com/prefix-dev/rattler-build/releases/latest/download/rattler-build-${arch}-unknown-linux-musl" \
+            -o /usr/local/bin/rattler-build
+          chmod +x /usr/local/bin/rattler-build
 
       - name: Upload to prefix.dev (testing)
         env:
           PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
         run: |
-          rattler-build upload prefix --channel nandi-testing --skip-existing output/**/*.conda
+          find output -name "*.conda" -exec rattler-build upload prefix --channel nandi-testing --skip-existing {} \;

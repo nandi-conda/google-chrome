@@ -33,9 +33,20 @@ build:
     # Install launcher wrapper script
     - install -m755 google-chrome-stable.sh $PREFIX/bin/google-chrome-stable
 
-    # Install menuinst menu file
-    - mkdir -p $PREFIX/share/menu/google-chrome
-    - cp menu/google-chrome/menu.json $PREFIX/share/menu/google-chrome/
+    # Install desktop file that points to our conda Chrome (not system)
+    - mkdir -p $PREFIX/share/applications
+    - cat > $PREFIX/share/applications/google-chrome.desktop <<EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Google Chrome
+Exec=$CONDA_PREFIX/bin/google-chrome/google-chrome %U
+Icon=$CONDA_PREFIX/lib/google-chrome/product_logo_48.png
+Comment=Google Chrome (Conda)
+Categories=Network;WebBrowser;
+StartupNotify=true
+Terminal=false
+EOF
 
     # Install icons
     - |

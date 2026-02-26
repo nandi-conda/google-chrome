@@ -1,0 +1,58 @@
+package:
+  name: google-chrome
+  version: 145.0.7632.116
+
+source:
+  - url: https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_145.0.7632.116-1_amd64.deb
+    sha256: 946328a46b692e9de0d0f5487d120008d3fac916abcd00c8b2e72d35b8aa082a
+    target: google-chrome.deb
+  - path: eula_text.html
+  - path: google-chrome-stable.sh
+
+build:
+  number: 0
+  script:
+    - mkdir -p $PREFIX/bin
+    - mkdir -p $PREFIX/lib/google-chrome
+    - mkdir -p $PREFIX/share/applications
+    - mkdir -p $PREFIX/share/icons/hicolor
+    - mkdir -p $PREFIX/share/licenses/google-chrome
+    # Extract .deb contents
+    - ar x google-chrome.deb
+    - tar -xf data.tar.xz -C $PREFIX --strip-components=0
+    # Install launcher script
+    - install -m755 google-chrome-stable.sh $PREFIX/bin/google-chrome-stable
+    # Install icons
+    - for i in 16x16 24x24 32x32 48x48 64x64 128x128 256x256; do
+        install -Dm644 $PREFIX/opt/google/chrome/product_logo_${i/x*/}.png $PREFIX/share/icons/hicolor/$i/apps/google-chrome.png || true;
+      done
+    # Install license
+    - install -Dm644 eula_text.html $PREFIX/share/licenses/google-chrome/eula_text.html
+    - install -Dm644 $PREFIX/opt/google/chrome/WidevineCdm/LICENSE $PREFIX/share/licenses/google-chrome/WidevineCdm-LICENSE.txt || true
+    # Fix desktop entry
+    - sed -i -e "/Exec=/i\\StartupWMClass=Google-chrome" -e "s/x-scheme-handler\\/ftp;\\?//g" $PREFIX/share/applications/google-chrome.desktop || true
+
+requirements:
+  build:
+    - python
+    - conda-package-handling
+  host:
+  run:
+    - alsa-lib
+    - gtk3
+    - libcups
+    - libxss
+    - libxtst
+    - nss
+
+tests:
+  - script:
+      - google-chrome-stable --version || true
+
+about:
+  summary: The popular web browser by Google (Stable Channel)
+  description: Google Chrome is a fast, secure, and free web browser, built for the modern web.
+  homepage: https://www.google.com/chrome
+  license: Proprietary
+  license_file: eula_text.html
+  repository: https://github.com/nandi-conda/google-chrome
